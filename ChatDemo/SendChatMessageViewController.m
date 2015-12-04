@@ -14,12 +14,19 @@
 #import <M13BadgeView.h>
 #import "macro.h"
 
+static const CGFloat kDefaultCollcetionCellTopLabelHeight = 20.0f;
+static const CGFloat kDefaultCollectionBubbleTopLabelHeight = 20.0f;
+static const CGFloat kDefaultCollectionBottomLabelHeight = 20.0f;
+static const CGFloat kDefaultTimeInterval = 60.0f;
+
 @interface SendChatMessageViewController ()
 <JSQMessagesComposerTextViewPasteDelegate,
 JSQMessagesCollectionViewDataSource,
 JSQMessagesCollectionViewDelegateFlowLayout>
 
 @property (strong, nonatomic) MessageData *messageData;
+
+@property (assign, nonatomic) NSTimeInterval currentTimeInterval;
 
 @end
 
@@ -54,7 +61,6 @@ JSQMessagesCollectionViewDelegateFlowLayout>
 }
 
 - (void)reloadData {
-    
     self.messageData = [[MessageData alloc] init];
     self.senderId = kSenderAvatarId;
     self.senderDisplayName = kSenderAvatarImageName;
@@ -64,33 +70,23 @@ JSQMessagesCollectionViewDelegateFlowLayout>
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setTitle:@"发送"
             forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor blackColor]
-                 forState:UIControlStateNormal];
-    [button setTitleColor:[UIColor colorWithRed:107 / 255.0f
-                                          green:124.0f / 255.0f
-                                           blue:145.0f / 255.0f
-                                          alpha:1.0f]
+    [button setTitleColor:RGBColor(107.0f, 124.0f, 145.0f)
                  forState:UIControlStateNormal];
     button.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     self.inputToolbar.contentView.rightBarButtonItem = button;
     self.inputToolbar.contentView.textView.backgroundColor = [UIColor whiteColor];
     self.inputToolbar.contentView.textView.placeHolder = @"请输入评论";
-    self.inputToolbar.contentView.textView.placeHolderTextColor =
-    [UIColor colorWithRed:214.0f / 255.0f
-                    green:224.0f / 255.0f
-                     blue:223.0f / 255.0f
-                    alpha:1.0f];
+    self.inputToolbar.contentView.textView.placeHolderTextColor = RGBColor(214.0f, 224.0f, 223.0f);
     //头像size
     self.collectionView.collectionViewLayout.incomingAvatarViewSize = CGSizeMake(40.0f, 40.0f);
     self.collectionView.collectionViewLayout.outgoingAvatarViewSize = CGSizeMake(40.0f, 40.0f);
-//    self.showLoadEarlierMessagesHeader = YES;
     self.collectionView.backgroundColor = RGBColor(242.0f, 249.0f, 246.0f);
-    //custom menu
-    [JSQMessagesCollectionViewCell registerMenuAction:@selector(customAction:)];
-    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:@"Custom Action"
-                                                                                      action:@selector(customAction:)] ];
     
-    //delete action
+//custom menu
+//    [JSQMessagesCollectionViewCell registerMenuAction:@selector(customAction:)];
+//    [UIMenuController sharedMenuController].menuItems = @[ [[UIMenuItem alloc] initWithTitle:@"Custom Action"
+//                                                                                      action:@selector(customAction:)] ];
+    
     [JSQMessagesCollectionViewCell registerMenuAction:@selector(delete:)];
 }
 
@@ -108,7 +104,6 @@ JSQMessagesCollectionViewDelegateFlowLayout>
                                  senderDisplayName:senderDisplayName
                                               date:date
                                               text:text];
-    
     [self.messageData.messages addObject:message];
     [self finishSendingMessageAnimated:YES];
 }
@@ -119,7 +114,6 @@ JSQMessagesCollectionViewDelegateFlowLayout>
     return [self.messageData.messages objectAtIndex:indexPath.item];
 }
 
-//删除
 - (void)collectionView:(JSQMessagesCollectionView *)collectionView
     didDeleteMessageAtIndexPath:(NSIndexPath *)indexPath {
     [self.messageData.messages removeObjectAtIndex:indexPath.item];
@@ -127,7 +121,6 @@ JSQMessagesCollectionViewDelegateFlowLayout>
 
 - (id<JSQMessageBubbleImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView
              messageBubbleImageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
     ChatMessageDataModel *message =
     [self.messageData.messages objectAtIndex:indexPath.item];
     if ([message.senderId isEqualToString:self.senderId]) {
@@ -139,35 +132,18 @@ JSQMessagesCollectionViewDelegateFlowLayout>
 - (id<JSQMessageAvatarImageDataSource>)collectionView:(JSQMessagesCollectionView *)collectionView
                     avatarImageDataForItemAtIndexPath:(NSIndexPath *)indexPath {
     ChatMessageDataModel *message = [self.messageData.messages objectAtIndex:indexPath.item];
-    
     return [self.messageData.avatars objectForKey:message.senderId];
 }
 
 - (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.item % 3 == 0) {
-        JSQMessage *message = [self.messageData.messages objectAtIndex:indexPath.item];
-        return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:message.date];
-    }
-    return nil;
-}
-
-- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView
-    attributedTextForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
-    JSQMessage *message = [self.messageData.messages objectAtIndex:indexPath.item];
-    if ([message.senderId isEqualToString:self.senderId]) {
+    
+    ChatMessageDataModel *message = [self.messageData.messages objectAtIndex:indexPath.item];
+    self.currentTimeInterval = [[NSDate date] timeIntervalSince1970];
+    NSTimeInterval chatReveiverTime = [message.date timeIntervalSince1970];
+    if (self.currentTimeInterval - chatReveiverTime < kDefaultTimeInterval) {
         return nil;
     }
-    if (indexPath.item - 1 > 0) {
-        JSQMessage *previousMessage = [self.messageData.messages objectAtIndex:indexPath.item - 1];
-        if ([[previousMessage senderId] isEqualToString:message.senderId]) {
-            return nil;
-        }
-    }
-    return [[NSAttributedString alloc] initWithString:message.senderDisplayName];
-}
-
-- (NSAttributedString *)collectionView:(JSQMessagesCollectionView *)collectionView attributedTextForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
-    return nil;
+    return [[JSQMessagesTimestampFormatter sharedFormatter] attributedTimestampForDate:message.date];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -184,19 +160,21 @@ JSQMessagesCollectionViewDelegateFlowLayout>
     ChatMessageDataModel *msg = [self.messageData.messages objectAtIndex:indexPath.item];
     if (!msg.isMediaMessage) {
         if ([msg.senderId isEqualToString:self.senderId]) {
-            cell.textView.textColor = [UIColor blackColor];
+            cell.textView.textColor = RGBColor(120.0f, 139.0f, 160.0f);
         }
         else {
             cell.textView.textColor = [UIColor whiteColor];
+            cell.messageBubbleTopLabel.text = nil;
         }
+        cell.textView.font = [UIFont systemFontOfSize:16.0f];
+        cell.cellTopLabel.textColor = RGBColor(179.0f, 192.0f, 207.0f);
+        cell.cellTopLabel.font = [UIFont systemFontOfSize:12.0f];
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
-                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
+                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)};
     }
     
     return cell;
 }
-
-
 
 #pragma mark - UICollectionViewDelegate
 #pragma mark - CustomMenuItems
@@ -235,32 +213,19 @@ JSQMessagesCollectionViewDelegateFlowLayout>
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout
     heightForCellTopLabelAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.item % 3 == 0) {
-        return kJSQMessagesCollectionViewCellLabelHeightDefault;
-    }
-    return 0.0f;
+    return kDefaultCollcetionCellTopLabelHeight;
 }
 
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout
     heightForMessageBubbleTopLabelAtIndexPath:(NSIndexPath *)indexPath {
-    ChatMessageDataModel *currentMessage = [self.messageData.messages objectAtIndex:indexPath.item];
-    if ([[currentMessage senderId] isEqualToString:self.senderId]) {
-        return 0.0f;
-    }
-    if (indexPath.item - 1 > 0) {
-        JSQMessage *previousMessage = [self.messageData.messages objectAtIndex:indexPath.item - 1];
-        if ([[previousMessage senderId] isEqualToString:[currentMessage senderId]]) {
-            return 0.0f;
-        }
-    }
-    return kJSQMessagesCollectionViewCellLabelHeightDefault;
+    return kDefaultCollectionBubbleTopLabelHeight;
 }
 
 - (CGFloat)collectionView:(JSQMessagesCollectionView *)collectionView
                    layout:(JSQMessagesCollectionViewFlowLayout *)collectionViewLayout
     heightForCellBottomLabelAtIndexPath:(NSIndexPath *)indexPath {
-    return 0.0f;
+    return kDefaultCollectionBottomLabelHeight;
 }
 
 #pragma mark - RespondingCollectionViewTapEvents
@@ -292,17 +257,6 @@ JSQMessagesCollectionViewDelegateFlowLayout>
 
 - (BOOL)composerTextView:(JSQMessagesComposerTextView *)textView
    shouldPasteWithSender:(id)sender {
-    if ([UIPasteboard generalPasteboard].image) {
-        JSQPhotoMediaItem *item =
-        [[JSQPhotoMediaItem alloc] initWithImage:[UIPasteboard generalPasteboard].image];
-        JSQMessage *message = [[JSQMessage alloc] initWithSenderId:self.senderId
-                                                 senderDisplayName:self.senderDisplayName
-                                                              date:[NSDate date]
-                                                             media:item];
-        [self.messageData.messages addObject:message];
-        [self finishSendingMessage];
-        return NO;
-    }
     return YES;
 }
 

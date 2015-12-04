@@ -75,7 +75,7 @@
         NSArray *allMessages = @[
                                  [[ChatMessageDataModel alloc] initWithSenderId:kSenderAvatarId
                                                               senderDisplayName:kSenderAvatarDisplayName
-                                                                           date:[NSDate date]
+                                                                           date:[NSDate distantPast]
                                                                            text:kSenderTextContent],
                                  [[ChatMessageDataModel alloc] initWithSenderId:kReceiverAvatarId
                                                               senderDisplayName:kReceiverAvatarDisplayName
