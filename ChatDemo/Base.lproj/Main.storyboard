@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9060" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="1eU-HI-PyR">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9051"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="jpU-fF-5Sh">
+            <objects>
+                <navigationController id="1eU-HI-PyR" sceneMemberID="viewController">
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Frn-kB-PXz">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="7GQ-6p-4v8"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8wj-1v-YZb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-862" y="301"/>
+        </scene>
+        <!--Receive Message View Controller-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="ReceiveMessageViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GgN-hz-Ie4">
+                                <rect key="frame" x="0.0" y="64" width="375" height="0.0"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" id="QUF-ak-QHc"/>
+                                </constraints>
+                            </view>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="YCF-vJ-gbV">
+                                <rect key="frame" x="0.0" y="64" width="375" height="603"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="Ifm-wV-Nzw"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="8Qf-jC-BMI"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="YCF-vJ-gbV" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="88v-L9-fj5"/>
+                            <constraint firstItem="YCF-vJ-gbV" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="BHq-4V-Qn2"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="YCF-vJ-gbV" secondAttribute="bottom" id="JN0-wS-XBb"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="YCF-vJ-gbV" secondAttribute="trailing" constant="-20" id="Jqw-1w-Ohk"/>
+                            <constraint firstAttribute="trailing" secondItem="YCF-vJ-gbV" secondAttribute="trailing" id="Q4O-lQ-eOU"/>
+                            <constraint firstAttribute="trailing" secondItem="GgN-hz-Ie4" secondAttribute="trailing" id="QpO-kQ-COJ"/>
+                            <constraint firstItem="YCF-vJ-gbV" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="dLb-Ld-O9C"/>
+                            <constraint firstItem="GgN-hz-Ie4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="fd0-cY-fbU"/>
+                            <constraint firstItem="GgN-hz-Ie4" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="qL2-MP-1Vd"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="Jqw-1w-Ohk"/>
+                                <exclude reference="dLb-Ld-O9C"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <navigationItem key="navigationItem" id="jQu-fl-pZX"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina47"/>
+                    <connections>
+                        <outlet property="tableView" destination="YCF-vJ-gbV" id="eK4-1Y-WlC"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-302.5" y="300.5"/>
+        </scene>
+    </scenes>
+</document>
